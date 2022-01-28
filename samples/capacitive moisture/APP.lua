@@ -1,5 +1,5 @@
 -- file : APP.lua
-local module = {}  
+local module = {}
 
 local mqtt_id = 6666
 local mqtt_topic_adc =  "/your_mqtt_topic/moisture_adc"
@@ -18,7 +18,7 @@ end
 local function callback_mqtt()
     mod_mqtt.send(mqtt_topic_adc, adc_val)
     sleep_timer = tmr.create()
-    sleep_timer:alarm(2000, tmr.ALARM_SINGLE, sleep)    
+    sleep_timer:alarm(2000, tmr.ALARM_SINGLE, sleep)
 end
 
 
@@ -27,8 +27,8 @@ local function callback_connect()
     mod_mqtt.init(mqtt_id, callback_mqtt)
 end
 
-function module.start()  
-    _G.APP_Version = "2.1"
+function module.start()
+    _G.APP_Version = "2.2"
     _G.APP_Name = "PLANT"
     mod_wifi.init(callback_connect)
     mod_adc.init(1000, 5, cb_adc)
