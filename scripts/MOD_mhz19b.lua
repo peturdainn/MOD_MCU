@@ -37,7 +37,7 @@ end
 
 -- API
     
-local function module.enable(on)
+function module.enable(on)
     if on == 1 then
         if parser_state == 0 then
             parser_state = 2
