@@ -95,7 +95,7 @@ end
 
 
 function module.init(count_, callback)
-    io_count = count
+    io_count = count_
     io_callback = callback
     local io
     for io = 1, io_count do
