@@ -166,6 +166,13 @@ Usage:
 * mod_scd4x.init(time, scl, sda, data_callback)
 * data_callback(CO2, TEMP, RH)
 
+### MOD_sht3x
+Temparature and humidity sensor from Sensirion
+Requires: tmr,i2c
+Usage:
+* mod_sht3x.init(time, scl, sda, data_callback)
+* data_callback(TEMP, RH)
+
 ### MOD_sds011
 Particle sensor SDS011 interface via UART with enable (use UART) and sleep/wakeup
 Since there is only one usable UART, there is a start method to grab UART.

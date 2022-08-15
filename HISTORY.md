@@ -1,3 +1,9 @@
+### 2.3
+* 2022 08 15 SHT3x support (temperature, humidity), memory tweaks, fixes, environment box sample project
+
+### 2.2
+* 2022 02 05 bugfix in MOD_io_lite; sample project for capacitive humidity sensor
+
 ### 2.1
 * 2021 10 09 created light versions for IO and SCD4x for memory-constrained projects
 * 2021 09 01 new module: SCD4x, ADC
