@@ -4,17 +4,18 @@
 local module = {}  
 
 local io_callback = nil         -- fn(pin, state, time)
-local io_pin                    -- IO pin number to watch
-local io_timer                  -- timer for io
-local io_stable                 -- last known stable value
-local io_time                   -- stable duration
-local io_idleping               -- time to call callback even if no change
-local io_cfg_idleping           -- time to call callback even if no change
-local io_cfg_debouncetime       -- debounce time check
+local io_pin = nil              -- IO pin number to watch
+local io_timer = nil            -- timer for io
+local io_stable = nil           -- last known stable value
+local io_time = nil             -- stable duration
+local io_idleping = nil         -- time to call callback even if no change
+local io_cfg_idleping = nil     -- time to call callback even if no change
+local io_cfg_debouncetime = nil -- debounce time check
 
 local function pin_timer(debouncing)
    -- kill timer, if pin steady start idle timer
    -- if debouncing, set time = 0, else time += idle
+    local io_now
     io_timer:unregister()
     if 0 < debouncing then
         io_now = gpio.read(io_pin)
@@ -55,6 +56,7 @@ end
 function module.watch(pin, debounce, idle)
     io_pin = pin
     io_timer = tmr.create()
+    gpio.mode(pin, gpio.INPUT)
     io_stable = gpio.read(pin)
     io_time = 0
     io_idleping = 0
@@ -64,7 +66,7 @@ function module.watch(pin, debounce, idle)
     gpio.mode(pin, gpio.INT, gpio.PULLUP)
     gpio.trig(pin, "both", pin_change_int)
     io_timer:alarm(1000, tmr.ALARM_SINGLE, function() pin_timer(0) end)
-    --            print("Watching IO pin "..pin.." (id "..io..") debounced "..debounce.."ms")
+--    print("Watching IO pin "..pin.." (id "..io..") debounced "..debounce.."ms")
 end
 
 

@@ -1,14 +1,6 @@
 local module = {}  
 
-local PM25_E = 0
-local PM100 = 0
-
-local PM25_E = 0
-local PM25_D = 0
-local PM100_E = 0
-local PM100_D = 0
-
-local state_notinit = 0
+local enabled = 0
 
 -- state constants
 local STATE_NOTINIT =  0
@@ -21,6 +13,7 @@ local parser_state = STATE_NOTINIT
 local mod_callback = nil
 
 local function uart_rx(data)
+    local dlen,PM25,PM100
     dlen = string.len(data)
     if parser_state == STATE_LOCKED then
         -- synced state
@@ -29,11 +22,7 @@ local function uart_rx(data)
             if CMD == 0xC0 then
                 PM25 = string.byte(data, 3) + (string.byte(data, 4) * 256)
                 PM100 = string.byte(data, 5) + (string.byte(data, 6) * 256)
-                PM25_E = PM25 / 10
-                PM25_D = PM25 - (PM25_E * 10)
-                PM100_E = PM100 / 10
-                PM100_D = PM100 - (PM100_E * 10)
-                mod_callback(PM25_E, PM25_D, PM100_E, PM100_D)
+                mod_callback(PM25, PM100)
             end
         end
     else
@@ -51,25 +40,30 @@ end
 
     
 function module.enable(on)
+    enabled = on
     if on == 1 then
         if parser_state == 0 then
             parser_state = STATE_UNLOCKED
             print("SDS011 is go")
-            node.output(function(nodestr) end, 0) -- kill node output on UART TX !
+            --node.output(function(nodestr) end, 0) -- kill node output on UART TX !
             uart.setup(0, 9600, 8, uart.PARITY_NONE, uart.STOPBITS_1, 0)
-            uart.on("data","\171",uart_rx, 0)         
+            uart.on("data","\171",uart_rx, 0)    
+            module.sleep(0)
         end
     end
 end
 
 function module.sleep(go_to_sleep)
-    work = 0x00
-    csum = 0x05 --0x205
-    if 0 == go_to_sleep then
-        work = 0x01
-        csum = 0x06 --0x206
-    end
-    uart.write(0, string.char(0xAA,0xB4,0x06,0x01,work,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,csum,0xAB))
+    local work,csum
+    if enabled == 1 then
+        work = 0x00
+        csum = 0x05 --0x205
+        if 0 == go_to_sleep then
+            work = 0x01
+            csum = 0x06 --0x206
+        end
+        uart.write(0, string.char(0xAA,0xB4,0x06,0x01,work,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0xFF,0xFF,csum,0xAB))
+    end    
 end
 
 

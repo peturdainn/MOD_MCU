@@ -17,10 +17,11 @@ local function pin_timer(io, debouncing)
    -- kill timer, if pin steady start idle timer
    -- if debouncing, set time = 0, else time += idle
     io_timer[io]:unregister()
-    if debouncing then
-       if io_stable[io] ~= gpio.read(io_pin[io]) then
+    if 0 < debouncing then
+        io_now = gpio.read(io_pin[io])        
+        if io_stable[io] ~= io_now then
             -- changed! reset idle counters to zero
-            io_stable[io] = gpio.read(io_pin[io])
+            io_stable[io] = io_now
             io_time[io] = 0
             io_idleping[io] = 0
             io_callback(io_pin[io], io_stable[io], io_time[io])
@@ -58,6 +59,7 @@ function module.watch(pin, debounce, idle)
         if io_pin[io] == -1 then
             io_pin[io] = pin
             io_timer[io] = tmr.create()
+            gpio.mode(pin, gpio.INPUT)
             io_stable[io] = gpio.read(pin)
             io_time[io] = 0
             io_idleping[io] = 0
